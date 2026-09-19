@@ -16,7 +16,7 @@ Wi-Fi アクセスポイント化、Samba ファイル共有、GPS による高�
 
 | 項目 | 要件 |
 |---|---|
-| ハードウェア | Raspberry Pi 4 / 5 |
+| ハードウェア | Raspberry Pi 5 |
 | OS | Raspberry Pi OS Bookworm (64-bit 推奨) |
 | GPS モジュール | UART 接続の GPS モジュール（`/dev/ttyAMA0`）|
 
@@ -69,8 +69,8 @@ ofspibase/
 
 ```bash
 mkdir -p ~/src && cd ~/src
-git clone https://github.com/<your-username>/ofspibase.git
-cd ofspibase
+git clone https://github.com/voyager3stars/OfsPiBase.git
+cd OfsPiBase
 ```
 
 ### 2. セットアップの実行
