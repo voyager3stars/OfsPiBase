@@ -35,6 +35,8 @@ source "${SCRIPT_DIR}/modules/02_samba.sh"
 source "${SCRIPT_DIR}/modules/03_gps.sh"
 # shellcheck source=modules/04_kstars.sh
 source "${SCRIPT_DIR}/modules/04_kstars.sh"
+# shellcheck source=modules/05_phd2.sh
+source "${SCRIPT_DIR}/modules/05_phd2.sh"
 
 # ── Pre-flight checks ───────────────────────────────────────────
 require_root
@@ -51,6 +53,7 @@ AP_CONFIGURED=false
 SAMBA_CONFIGURED=false
 GPS_CONFIGURED=false
 KSTARS_CONFIGURED=false
+PHD2_CONFIGURED=false
 
 # ── Banner ───────────────────────────────────────────────────────
 echo "================================================================"
@@ -87,6 +90,11 @@ fi
 # 4. KStars / EKOS / INDI
 if setup_kstars; then
   KSTARS_CONFIGURED=true
+fi
+
+# 5. PHD2
+if setup_phd2; then
+  PHD2_CONFIGURED=true
 fi
 
 # ── Summary ──────────────────────────────────────────────────────
@@ -139,6 +147,13 @@ if [ "$KSTARS_CONFIGURED" = true ]; then
   echo "----------------------------------------------------------------"
 fi
 
+if [ "$PHD2_CONFIGURED" = true ]; then
+  echo "【PHD2 の起動確認】"
+  echo "  再起動後、デスクトップメニューまたは以下のコマンドで起動できます:"
+  echo "  $ phd2"
+  echo "----------------------------------------------------------------"
+fi
+
 echo ""
 echo "【補足: 接続先情報まとめ】"
 [ "$SAMBA_CONFIGURED" = true ] && echo "  ・Samba 共有フォルダ: \\\\$CLEAN_IP\\$SAMBA_SHARE_NAME"
@@ -162,7 +177,7 @@ done
 echo "  ・接続ユーザー名:     $TARGET_USER"
 echo "================================================================"
 
-if [ "$GPS_CONFIGURED" = true ] || [ "$KSTARS_CONFIGURED" = true ]; then
+if [ "$GPS_CONFIGURED" = true ] || [ "$KSTARS_CONFIGURED" = true ] || [ "$PHD2_CONFIGURED" = true ]; then
   echo ""
   echo " [要対応] 設定の変更を反映するため、再起動してください:"
   echo "          sudo reboot"

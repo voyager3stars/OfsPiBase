@@ -8,7 +8,7 @@
 
 OFSPiBase は、Raspberry Pi を天体観測フィールド環境で使用するために必要な初期設定をワンコマンドで行うセットアップスクリプトです。
 
-Wi-Fi アクセスポイント化、Samba ファイル共有、GPS による高精度時刻同期、KStars/EKOS/INDI のインストールをそれぞれモジュール化しており、必要な機能だけを選択してセットアップできます。
+Wi-Fi アクセスポイント化、Samba ファイル共有、GPS による高精度時刻同期、KStars/EKOS/INDI、および PHD2 オートガイドのインストールをそれぞれモジュール化しており、必要な機能だけを選択してセットアップできます。
 
 > **関連記事**: [Raspberry Pi INDI System: Part 1—System Setup – voyager3](https://voyager3.stars.ne.jp)
 
@@ -29,6 +29,7 @@ Wi-Fi アクセスポイント化、Samba ファイル共有、GPS による高�
 | **Samba** | Windows PC からファイル共有でアクセスできるよう Samba を構成 |
 | **GPS / 時刻同期** | UART 接続の GPS モジュールと Chrony を使った高精度時刻同期 + INDI-GPSD ドライバを構成 |
 | **KStars / EKOS** | KStars/EKOS/INDI をソースからビルド・インストール（[astro-soft-build](https://gitea.nouspiro.space/nou/astro-soft-build) 使用） |
+| **PHD2** | PHD2 (オートガイド) をソースからビルド・インストール |
 
 各機能は実行時に個別に有効/スキップを選択できます。
 
@@ -46,18 +47,20 @@ ofspibase/
 │   ├── 01_wifi_ap.sh       ← Wi-Fi AP 設定モジュール
 │   ├── 02_samba.sh         ← Samba 設定モジュール
 │   ├── 03_gps.sh           ← GPS / Chrony / INDI-GPSD 設定モジュール
-│   └── 04_kstars.sh        ← KStars / EKOS / INDI インストールモジュール
+│   ├── 04_kstars.sh        ← KStars / EKOS / INDI インストールモジュール
+│   └── 05_phd2.sh          ← PHD2 インストールモジュール
 └── README.md
 ```
 
 ### ユーザー環境での配置（`~/src`）
 
-`setup.sh` を実行すると、KStars のビルド用リポジトリが自動的に clone されます。
+`setup.sh` を実行すると、KStars および PHD2 のビルド用リポジトリが自動的に clone されます。
 
 ```
 ~/src/
 ├── ofspibase/              ← 本リポジトリ
-└── astro-soft-build/       ← setup.sh が自動 clone
+├── astro-soft-build/       ← KStars用ビルドスクリプト (自動 clone)
+└── phd2/                   ← PHD2 ソースコード (自動 clone)
 ```
 
 ## 使い方
@@ -123,10 +126,10 @@ cgps -s
 chronyc sources
 ```
 
-#### KStars / EKOS
+#### KStars / EKOS / PHD2
 
-KStars のインストール後は **再起動が必要** です。
-再起動後、デスクトップまたは VNC から KStars を起動し、`Ctrl + K` で EKOS を開いてプロファイルを作成してください。
+KStars や PHD2 のインストール後は **再起動が必要** です。
+再起動後、デスクトップまたは VNC から KStars や PHD2 を起動できます。
 
 ## 各モジュールの詳細
 
@@ -168,6 +171,14 @@ KStars のインストール後は **再起動が必要** です。
 - 安定版のビルドとインストール (`build-soft-stable.sh`)
 - ※ ビルドには約1時間かかります
 
+### PHD2 (`modules/05_phd2.sh`)
+
+- [OpenPHDGuiding/phd2](https://github.com/OpenPHDGuiding/phd2) を使用してソースからビルド
+- `phd2` リポジトリを `~/src/` に自動 clone
+- 必要な依存ライブラリ（`libwxgtk3.2-dev`, `libindi-dev`, `libnova-dev` 等）の自動インストール
+- CMake によるビルド構成と `make -j$(nproc)` による並列ビルド
+- システム全体へのインストール (`make install` & `ldconfig`)
+
 ## ライセンス
 
 MIT License
@@ -179,6 +190,14 @@ MIT License
 ---
 
 ## 更新履歴
+
+### v1.3.0 (2025-09-20)
+
+**PHD2 インストール機能の追加**
+
+- `modules/05_phd2.sh` を新規追加
+  - ソースからのビルドとインストールを自動化
+- `setup.sh` に PHD2 のサマリーを追加
 
 ### v1.2.0 (2025-09-19)
 
